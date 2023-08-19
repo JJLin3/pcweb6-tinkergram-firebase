@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, googleProvider } from "../firebase";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const signInWithGoogle = async() => {
+    try {
+      await signInWithPopup(auth, googleProvider)
+    } catch (error){
+      console.error(error);
+    }
+  }
   return (
     <Container>
       <h1 className="my-3">Login to your account</h1>
@@ -57,6 +65,7 @@ export default function LoginPage() {
         </Button>
       </Form>
       <p>{error}</p>
+      <Button onClick={signInWithGoogle}> Signin with google</Button>
     </Container>
   );
 }
