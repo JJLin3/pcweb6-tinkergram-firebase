@@ -1,3 +1,10 @@
+// import the library
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+// import your icons
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./views/LoginPage";
 import PostPageHome from "./views/PostPageHome";
@@ -22,3 +29,5 @@ function App() {
 }
 
 export default App;
+
+library.add(fas, far)
