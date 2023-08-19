@@ -84,13 +84,14 @@ export default function PostPageDetails() {
       setLikeCounter(counter);
       await updateDoc(doc(db, "posts", id), { likes: counter});
     }
-    console.log(!likeStatus)
     await updateDoc(doc(db, "users", userId, "reviews", reviewId ), { like: !likeStatus  });
 
   }
 
-  const updateComment = async(index) => { 
-
+  const toggleComment = async(index) => { 
+    let status = commentStatus;
+    status[index] = !commentStatus[index];
+    setCommentStatus(status)
   }
 
   const handleDeleteComment = async(index) => {
@@ -99,14 +100,30 @@ export default function PostPageDetails() {
   newComments.splice(index, 1);
 
   await updateDoc(doc(db, "posts", id), {comments: newComments});
-  getPost(id);
+  }
+
+  const handleUpdateComment = async(e, index) => {
+    let newComments = comments;
+    
+
+  newComments.splice(index, 1, e.target.value);
+  setComments(newComments)
+    await updateDoc(doc(db, "posts", id), {comments: newComments});
+  }
+
+  const handleAddComment = async() => {
+    let newComments = comments;
+    
+  newComments.push("");
+  setComments(newComments)
+    await updateDoc(doc(db, "posts", id), {comments: newComments});
   }
 
   useEffect(() => {
     if (loading) return;
     if (!user) navigate("/login");
     getPost(id);
-  }, [id, navigate, user, loading]);
+  }, [id, navigate, user, loading, comments,commentStatus]);
 
   return (
     <>
@@ -151,13 +168,14 @@ export default function PostPageDetails() {
                 <ListGroup style={{paddingTop: '10px'}}>
                   {comments.map((comment, index) => (
                     <ListGroupItem key={index}>
-                      {commentStatus[index]? <p>{comment}</p> : <input />}
+                      {!commentStatus[index] ? <p>{comment}</p> : <input value={comment} onChange={(e)=> handleUpdateComment(e, index)} />}
                       <ButtonGroup>
-                      <Button onClick={()=> updateComment(index)}>Edit</Button>
+                      <Button onClick={()=> toggleComment(index)}>Edit</Button>
                       <Button onClick={() => {handleDeleteComment(index)}}>Delete</Button>
                       </ButtonGroup>
                     </ListGroupItem>
                   ))}
+                  <Button onClick={() => {handleAddComment()}}>Add</Button>
                 </ListGroup>
               </Card.Body>
             </Card>
