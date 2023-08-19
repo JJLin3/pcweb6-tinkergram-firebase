@@ -27,7 +27,8 @@ export default function PostPageAdd() {
     const imageUrl = await getDownloadURL(response.ref); 
 
     //Add the document to Cloud Firestore
-    await addDoc(collection(db, "posts"), { caption, image: imageUrl, imageName: imageName }); //add an entry/document whcih contain a caption and an image to the collection
+    await addDoc(collection(db, "posts"), { caption, image: imageUrl, imageName: imageName, comments:[], likes:0 }); //add an entry/document whcih contain a caption and an image to the collection
+  
     navigate("/");
   }
 
