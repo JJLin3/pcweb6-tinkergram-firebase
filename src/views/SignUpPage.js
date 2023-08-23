@@ -2,13 +2,29 @@ import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const handleSignUp = async () => {
+    const canSignUp = username && password;
+    if (canSignUp) {
+      try {
+        await createUserWithEmailAndPassword(auth, username, password);
+        await addDoc(collection(db, "users"), {email: username, likes: []})
+        navigate("/");
+      } catch (error) {
+        setError(error.message);
+      }
+    } else {
+      setError("Please fill in all the fields.");
+    }
+  };
 
   return (
     <Container>
@@ -38,20 +54,13 @@ export default function SignUpPage() {
           <a href="/login">Have an existing account? Login here.</a>
         </Form.Group>
         <Button
-        variant="primary"
-        onClick={async(e) => {
-          const canSignUp = username && password;
-          if(canSignUp){
-            try{
-              await createUserWithEmailAndPassword(auth, username, password);
-              navigate("/");
-            } catch(error) {
-              setError(error.message);
-            }
-          } else {
-            setError("Please fill in all the fields.")
-          }
-        }}>Sign Up</Button>
+          variant="primary"
+          onClick={async (e) => {
+            handleSignUp(e);
+          }}
+        >
+          Sign Up
+        </Button>
       </Form>
       <p>{error}</p>
     </Container>
