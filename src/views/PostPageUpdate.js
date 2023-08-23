@@ -34,10 +34,15 @@ export default function PostPageUpdate() {
 
       //Get me a URL for the file I just uploaded so I can access this from anywhere
       imageUrl = await getDownloadURL(response.ref);
+
+      //Add the document to Cloud Firestore
+      await updateDoc(doc(db, "posts", id), { caption, image: imageUrl, imageName: image.name });
+    } else {
+      //Add the document to Cloud Firestore if no image is uploaded
+      await updateDoc(doc(db, "posts", id), { caption });
     }
 
-    //Add the document to Cloud Firestore
-    await updateDoc(doc(db, "posts", id), { caption, image: imageUrl, imageName: image.name });
+    
     navigate("/");
   }
 
